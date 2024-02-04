@@ -1,6 +1,7 @@
 const express = require('express');
 const { graphqlHTTP } = require('express-graphql');
 const { buildSchema } = require('graphql');
+const cors = require('cors');
 
 // Define the schema
 const schema = buildSchema(`
@@ -25,13 +26,18 @@ const users = [
 // Resolvers
 const root = {
   getUser: ({ id }) => users.find(user => user.id === id),
-  getAllUsers: () => users
+  getAllUsers: () => {
+    console.log("I got a request!")
+    return users
+  }
 };
 
 const app = express()
 
-app.use('/graphql', graphqlHTTP({ schema, rootValue: root, graphiql: true }));
+app.use(cors()); //enabled cors for all origin
+
+app.use('/', graphqlHTTP({ schema, rootValue: root, graphiql: true }));
 
 app.listen(3000, () => {
-    console.log('Running a GraphQL API server at http://localhost:3000/graphql');
+    console.log('Running a GraphQL API server at http://localhost:3000/');
 });
